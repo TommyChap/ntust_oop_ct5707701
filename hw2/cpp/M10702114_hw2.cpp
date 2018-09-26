@@ -1,9 +1,10 @@
 #include <iostream>
 #include <string>
-#include <vector>
 #include <algorithm>
 
 using namespace std;
+
+void insert_sort(string *, int);
 
 int main(void){
 	int n, i = 0;
@@ -27,10 +28,9 @@ int main(void){
 		cout << "請輸入字串或指令(print/exit):";
 		cin >> s[i];
 		if (s[i] == "print") {
-			vector<string> sortvector(s, s + i);
-			sort(sortvector.begin(), sortvector.end());
-			for (vector<string>::iterator j = sortvector.begin(); j != sortvector.end(); ++j)
-				cout << * j << " ";
+			for (int j = 0; j < i; j++){
+				cout << s[j] << " ";
+			}
 			cout << endl;
 		} else if (s[i] == "exit") {
 			break;
@@ -38,10 +38,26 @@ int main(void){
 			if (i == n) {
 				cout << "已達輸入上限" << endl;
 			} else {
+				insert_sort(s, i);
 				i++;
 			}
 		}	
 	}
 	system("pause");
 	return 0;
+}
+
+void insert_sort(string *s, int len){
+	string s_tmp;
+	if (len < 1) {
+		return;
+	} else {
+		for (int i = len; i > 0; i--) {
+			if (s[i] < s[i - 1]) {
+				s_tmp = s[i];
+				s[i] = s[i - 1];
+				s[i - 1] = s_tmp;
+			}
+		}
+	}
 }
