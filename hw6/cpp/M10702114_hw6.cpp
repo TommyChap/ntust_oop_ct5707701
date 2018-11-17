@@ -1,9 +1,15 @@
 //hw6.cpp
 
 #include <iostream>
+#include <cstring>
 #include <assert.h>
 
 using namespace std;
+
+class matrix;
+class vector;
+vector & MmultV(matrix&, vector&);
+vector & VmultM(vector&, matrix&);
 
 class matrix {
 private:
@@ -84,6 +90,9 @@ public:
 			cout << endl;
 		}
 	}
+
+	friend vector & MmultV(matrix&, vector&);
+	friend vector & VmultM(vector&, matrix&); 
 };
 
 class vector {
@@ -105,14 +114,11 @@ public:
 	}
 
 	//copy constructor
-	vector(const matrix &other) {
+	vector(const vector &other) {
 		int tmp;
 		this->size = other.size;
-		this->matrix_local = new int*[this->size];
-		for(tmp = 0; tmp < this->size; tmp++) {
-			this->matrix_local[tmp] = new int[this->size];
-			memcpy(this->matrix_local[tmp], other.matrix_local[tmp], this->size * sizeof(int));
-		}
+		this->vector_local = new int[this->size];
+		memcpy(this->vector_local, other.vector_local, this->size * sizeof(int));
 	}
 
 	//copy assignment operator
@@ -120,17 +126,11 @@ public:
 		int tmp;
 		if(this != &other) {
 			if(this->size > 0) {
-				for(tmp = 0; tmp < this->size; tmp++) {
-					delete[] this->matrix_local[tmp]; 
-				}
-				delete[] this->matrix_local;
+				delete[] this->vector_local;
 			}
 			this->size = other.size;
-			this->matrix_local = new int*[this->size];
-			for(tmp = 0; tmp < this->size; tmp++) {
-				this->matrix_local[tmp] = new int[this->size]; 
-				memcpy(this->matrix_local[tmp], other.matrix_local[tmp], this->size * sizeof(int));
-			}
+			this->vector_local = new int[this->size];
+			memcpy(this->vector_local, other.vector_local, this->size * sizeof(int));
 		}
 		return *this;
 	}
@@ -138,31 +138,46 @@ public:
 	~vector(void) {
 		int tmp;
 		if(this->size > 0) {
-			for(tmp = 0; tmp < this->size; tmp++) {
-				delete[] this->matrix_local[tmp]; 
-			}
-			delete[] this->matrix_local;
+			delete[] this->vector_local;
 		}
 		this->size = 0;
 	}
 
-	void setElement(int x, int y, int value) {
-		this->matrix_local[x][y] = value;
+	void setElement(int i, int value) {
+		this->vector_local[i] = value;
 	}
 
-	int getElement(int x, int y) {
-		return this->matrix_local[x][y];
+	int getElement(int i) {
+		return this->vector_local[i];
 	}
 
 	void printSelf(void){
 		for(int i = 0; i < this->size; i++) {
-			for(int j = 0; j < this->size; j++) {
-				cout << this->matrix_local[i][j] << " ";
-			}
-			cout << endl;
+			cout << this->vector_local[i] << " ";
 		}
+		cout << endl;
 	}
+
+	friend vector & MmultV(matrix&, vector&);
+	friend vector & VmultM(vector&, matrix&); 
 };
+
+vector & MmultV(matrix &m, vector &v){
+	int tmp;
+	vector *v_tmp = new vector(v.size);
+	for(int i = 0; i < v.size; i++) {
+		tmp = 0;
+		for(int j = 0; j < m.size; j++) {
+			tmp += m.matrix_local[i][j]*v.vector_local[i];
+		}
+		v_tmp->setElement(i, tmp);
+	}
+	return *v_tmp;
+}
+
+vector & VmultM(vector &v, matrix &m){
+	return MmultV(m, v);
+}
 
 int main() {
 	// obtain the matrix size from user
