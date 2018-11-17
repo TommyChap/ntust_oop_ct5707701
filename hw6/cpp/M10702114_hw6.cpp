@@ -13,18 +13,21 @@ vector & VmultM(vector&, matrix&);
 
 class matrix {
 private:
+	static int count;
 	// add data members
 	int **matrix_local;
 	int size;
 
 public:
 	matrix(void) {
+		this->count++;
 		this->size = 0;
 	}
 
 	// add functiom members
 	matrix(int size) {
 		int tmp;
+		this->count++;
 		this->size = size;
 		matrix_local = new int*[size];
 		for(tmp = 0; tmp < size; tmp++) {
@@ -35,6 +38,7 @@ public:
 	//copy constructor
 	matrix(const matrix &other) {
 		int tmp;
+		this->count++;
 		this->size = other.size;
 		this->matrix_local = new int*[this->size];
 		for(tmp = 0; tmp < this->size; tmp++) {
@@ -65,6 +69,7 @@ public:
 
 	~matrix(void) {
 		int tmp;
+		this->count--;
 		if(this->size > 0) {
 			for(tmp = 0; tmp < this->size; tmp++) {
 				delete[] this->matrix_local[tmp]; 
@@ -91,31 +96,37 @@ public:
 		}
 	}
 
+	static int getCount() {
+		return count;
+	}
+
 	friend vector & MmultV(matrix&, vector&);
 	friend vector & VmultM(vector&, matrix&); 
 };
 
 class vector {
-	private:
+private:
+	static int count;
 	// add data members
 	int *vector_local;
 	int size;
 
 public:
 	vector(void) {
+		this->count++;
 		this->size = 0;
 	}
 
 	// add functiom members
 	vector(int size) {
-		int tmp;
+		this->count++;
 		this->size = size;
 		vector_local = new int[size];
 	}
 
 	//copy constructor
 	vector(const vector &other) {
-		int tmp;
+		this->count++;
 		this->size = other.size;
 		this->vector_local = new int[this->size];
 		memcpy(this->vector_local, other.vector_local, this->size * sizeof(int));
@@ -123,7 +134,6 @@ public:
 
 	//copy assignment operator
 	vector &operator=(const vector &other) {
-		int tmp;
 		if(this != &other) {
 			if(this->size > 0) {
 				delete[] this->vector_local;
@@ -136,7 +146,7 @@ public:
 	}
 
 	~vector(void) {
-		int tmp;
+		this->count--;
 		if(this->size > 0) {
 			delete[] this->vector_local;
 		}
@@ -158,6 +168,10 @@ public:
 		cout << endl;
 	}
 
+	static int getCount() {
+		return count;
+	}
+
 	friend vector & MmultV(matrix&, vector&);
 	friend vector & VmultM(vector&, matrix&); 
 };
@@ -168,7 +182,7 @@ vector & MmultV(matrix &m, vector &v){
 	for(int i = 0; i < v.size; i++) {
 		tmp = 0;
 		for(int j = 0; j < m.size; j++) {
-			tmp += m.matrix_local[i][j]*v.vector_local[i];
+			tmp += m.matrix_local[i][j]*v.vector_local[j];
 		}
 		v_tmp->setElement(i, tmp);
 	}
@@ -178,6 +192,9 @@ vector & MmultV(matrix &m, vector &v){
 vector & VmultM(vector &v, matrix &m){
 	return MmultV(m, v);
 }
+
+int matrix::count = 0;
+int vector::count = 0;
 
 int main() {
 	// obtain the matrix size from user
@@ -260,5 +277,7 @@ int main() {
 	//test counting object
 	cout << "After deleting, there are " << matrix::getCount() << " matrices and "
 		<< vector::getCount() << " vectors in this program." << endl;
+
+	system("pause");
 }
 
