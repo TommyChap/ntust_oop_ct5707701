@@ -2,7 +2,7 @@
 # 作業說明
 * hw7.pdf
 * 請將以下之類別繼承架構製作成程式。
-* ![This is a pictrue.](./p1.jpg)
+* ![This is a pictrue.](https://raw.githubusercontent.com/TommyChap/ntust_oop_ct5707701/master/hw7/p1.JPG)
 * 程式要求：
 	1.	可自訂其他的問題，但問題之階層數與類別數不可少於上圖。
 	2.	請發揮您的想像力，自訂屬於這些類別的資料與函式成員，並以 適當的權限設定，宣告於適當的類別中。
